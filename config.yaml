@@ -2,13 +2,13 @@ trainer:
   model: Qwen/Qwen2.5-0.5B-Instruct
   revision: main
   steps: 1000
-  batch_size: 16
+  batch_size: 4
   seed: 42
-  learning_rate: 0.00001
+  learning_rate: 0.000001
 
 generator:
   sampling_params:
-    n: 4 # rollouts per sample, make this larger than 1 for advantage calculation
+    n: 16 # rollouts per sample, make this larger than 1 for advantage calculation
     max_tokens: 4096
     temperature: 1.0
     top_p: 1.0

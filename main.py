@@ -64,7 +64,7 @@ def train(trainer, generator, dataloader, config, wandb_run):
 
 @hydra.main(version_base=None, config_path=".", config_name="config")
 def main(cfg: DictConfig):
-    # Ray's uv hook otherwise recreates the CUDA environment inside its temp directory.
+    # Keep local CUDA environments out of Ray's temporary source packages.
     os.environ["RAY_ENABLE_UV_RUN_RUNTIME_ENV"] = "0"
     import ray
 
@@ -100,13 +100,14 @@ def main(cfg: DictConfig):
         json.dump(settings, stream, indent=2)
         stream.write("\n")
 
+    project = Path(__file__).resolve().parent
     ray.init(
         address="local",
         include_dashboard=False,
-        _temp_dir=str(Path(__file__).resolve().parent / ".ray"),
+        _temp_dir=str(project / ".ray"),
         runtime_env={
             "py_executable": sys.executable,
-            "working_dir": str(Path(__file__).resolve().parent),
+            "working_dir": str(project),
             "excludes": [".venv", ".ray", "outputs", ".git"],
             "env_vars": {"VLLM_WORKER_MULTIPROC_METHOD": "spawn"},
         },
